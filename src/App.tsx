@@ -1,9 +1,13 @@
 import { useState } from 'react';
-import './style.css';
-import { MenuDropdown } from './components/MenuDropdown';
 import { CitiesDropdown } from './components/CitiesDropdown';
+import { CustomDropdown } from './components/CustomDropdown';
 import { LanguageDropdown } from './components/LanguageDropdown';
+import { MenuDropdown } from './components/MenuDropdown';
+import './style.css';
 import { translations, type Locale } from "./translations";
+import { NewDropdown, NewDropdownItem, NewDropdownMenu, NewDropdownTrigger } from './components/new-dropdown';
+import { Link } from 'react-router';
+import TestComp from './components/TestComp';
 
 const languageOptions = [
   { code: "en", label: "EN" },
@@ -42,8 +46,35 @@ export const App = () => {
   return (
     <>
       <header className="header">
+
         <div className="header-inner">
           <MenuDropdown items={menuItems} />
+          <CustomDropdown options={menuItems.map((item) => ({ value: item.to, label: item.label }))} placeholder="Select an option" />
+
+          <CustomDropdown options={menuItems.map((item) => ({ value: item.label, label: item.to }))} placeholder="new placeholder" />
+
+
+          <NewDropdown>
+            <NewDropdownTrigger>
+              <button type="button" className="dropdown-toggle">
+                фываыфав
+              </button>
+            </NewDropdownTrigger>
+            <NewDropdownMenu aria-label="Dynamic Actions" items={[{ key: "edit", label: "Edit" }, { key: "copy", label: "Copy" }, { key: "delete", label: "Delete" }]}>
+              {(item) => (
+                <NewDropdownItem
+                  key={item.key}
+                  className={item.key === "delete" ? "text-danger" : ""}
+                  color={item.key === "delete" ? "danger" : "default"}
+                >
+                  <Link to={item.key}>{item.label}</Link>
+                </NewDropdownItem>
+              )}
+            </NewDropdownMenu>
+          </NewDropdown>
+
+
+
           <LanguageDropdown
             options={languageOptions}
             value={lang}
@@ -108,6 +139,25 @@ export const App = () => {
             </div>
           </div>
         </section>
+
+        <div>
+          <NewDropdown>
+            <NewDropdownTrigger>
+              <button type="button" className="dropdown-toggle">Х</button>
+            </NewDropdownTrigger>
+            <NewDropdownMenu aria-label="Dynamic Actions" items={[{ key: "edit", label: "Edit" }, { key: "copy", label: "Copy" }, { key: "delete", label: "Delete" }]}>
+              {(item) => (
+                <NewDropdownItem
+                  key={item.key}
+                  className={item.key === "delete" ? "text-danger" : ""}
+                  color={item.key === "delete" ? "danger" : "default"}
+                >
+                  <Link to={item.key}>{item.label}</Link>
+                </NewDropdownItem>
+              )}
+            </NewDropdownMenu>
+          </NewDropdown>
+        </div>
 
         {/* GALLERY */}
         <section className="gallery">

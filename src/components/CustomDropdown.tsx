@@ -1,29 +1,30 @@
+import { useState } from 'react'
 import { useDropdown } from '../hooks/use-dropdown'
 import { Dropdown } from './Dropdown'
 
-type LanguageOption = {
-  code: string
+export type CustomDropdownOption = {
+  value: string
   label: string
 }
 
-type LanguageDropdownProps = {
-  options: LanguageOption[]
-  value: string
-  onChange: (code: string) => void
+type CustomDropdownProps = {
+  options: CustomDropdownOption[]
+  placeholder?: string
 }
 
-export const LanguageDropdown = ({
+export const CustomDropdown = ({
   options,
-  value,
-  onChange,
-}: LanguageDropdownProps) => {
+  placeholder = 'Select an option',
+}: CustomDropdownProps) => {
+  const [selected, setSelected] = useState<CustomDropdownOption | null>(null)
   const { containerRef, isOpen, closeDropdown, toggleDropdown } = useDropdown()
-  const currentOption = options.find((option) => option.code === value) ?? options[0]
 
-  function handleSelect(code: string) {
-    onChange(code)
+  function handleSelect(option: CustomDropdownOption) {
+    setSelected(option)
     closeDropdown()
   }
+
+  const displayLabel = selected?.label ?? placeholder
 
   return (
     <Dropdown
@@ -39,18 +40,18 @@ export const LanguageDropdown = ({
           aria-expanded={isOpen}
           aria-haspopup="listbox"
         >
-          {currentOption?.label}
+          {displayLabel}
         </button>
       )}
     >
       <ul className="dropdown-menu-list">
-        {options.map((lang) => (
-          <li key={lang.code}>
+        {options.map((option) => (
+          <li key={option.value}>
             <button
               type="button"
-              onClick={() => handleSelect(lang.code)}
+              onClick={() => handleSelect(option)}
             >
-              {lang.label}
+              {option.label}
             </button>
           </li>
         ))}

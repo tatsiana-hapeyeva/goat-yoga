@@ -1,54 +1,58 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router";
-import { Dropdown } from "./Dropdown";
+import { useEffect } from 'react'
+import { Link, useLocation } from 'react-router'
+import { useDropdown } from '../hooks/use-dropdown'
+import { Dropdown } from './Dropdown'
 
 type MenuItem = {
-    to: string;
-    label: string;
-};
+    to: string
+    label: string
+}
 
 type MenuDropdownProps = {
-    items: MenuItem[];
-};
+    items: MenuItem[]
+}
 
 export const MenuDropdown = ({ items }: MenuDropdownProps) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const location = useLocation();
-
-    const toggleDropdown = () => setIsOpen((prev) => !prev);
-    const closeDropdown = () => setIsOpen(false);
+    const location = useLocation()
+    const { containerRef, isOpen, closeDropdown, toggleDropdown } = useDropdown()
 
     useEffect(() => {
-        if (location.hash) {
-            const id = location.hash.slice(1);
-            const el = document.getElementById(id);
-            if (el) {
-                el.scrollIntoView({ behavior: "smooth" });
-            }
-        }
-    }, [location.hash]);
+        if (!location.hash) return
+
+        const id = location.hash.slice(1)
+        const element = document.getElementById(id)
+
+        if (!element) return
+
+        element.scrollIntoView({ behavior: 'smooth' })
+    }, [location.hash])
 
     return (
-        <Dropdown isOpen={isOpen} onClose={closeDropdown}>
-            <nav className="nav">
-                <button className="nav-toggle" onClick={toggleDropdown}>
-                    {isOpen ? "✕" : "☰"}
+        <Dropdown
+            containerRef={containerRef}
+            isOpen={isOpen}
+            className="nav"
+            trigger={(
+                <button
+                    className="nav-toggle"
+                    onClick={toggleDropdown}
+                    type="button"
+                    aria-expanded={isOpen}
+                    aria-haspopup="menu"
+                >
+                    {isOpen ? '✕' : '☰'}
                 </button>
-
-                {isOpen && (
-                    <div className="dropdown-menu">
-                        {items.map((item) => (
-                            <Link
-                                key={item.to}
-                                to={`/${item.to}`}
-                                onClick={closeDropdown}
-                            >
-                                {item.label}
-                            </Link>
-                        ))}
-                    </div>
-                )}
-            </nav>
+            )}
+        >
+            {items.map((item) => (
+                <Link
+                    key={item.to}
+                    to={`/${item.to}`}
+                    onClick={closeDropdown}
+                >
+                    {item.label}
+                </Link>
+            ))}
         </Dropdown>
-    );
-};
+    )
+}

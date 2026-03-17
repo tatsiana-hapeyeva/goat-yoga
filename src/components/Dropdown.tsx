@@ -1,33 +1,30 @@
-import { useEffect, useRef } from "react";
+import { type ReactNode, type RefObject } from 'react'
 
 type DropdownProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-  className?: string;
-};
+  containerRef: RefObject<HTMLDivElement | null>
+  isOpen: boolean
+  trigger?: ReactNode
+  children: ReactNode
+  className?: string
+  menuClassName?: string
+}
 
-export const Dropdown = ({ isOpen, onClose, children, className }: DropdownProps) => {
-  const menuRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen, onClose]);
-
+export function Dropdown({
+  containerRef,
+  isOpen,
+  trigger,
+  children,
+  className,
+  menuClassName = 'dropdown-menu',
+}: DropdownProps) {
   return (
-    <div ref={menuRef} className={className}>
-      {children}
+    <div ref={containerRef} className={className}>
+      {trigger}
+      {isOpen ? (
+        <div className={menuClassName}>
+          {children}
+        </div>
+      ) : null}
     </div>
-  );
-};
+  )
+}

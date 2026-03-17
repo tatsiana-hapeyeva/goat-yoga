@@ -1,119 +1,79 @@
-import { useState } from "react";
-import { type City, ALL_CITIES } from "../data/cities";
-import { Dropdown } from "./Dropdown";
+import { useState, type UIEvent } from 'react'
+import { type City, ALL_CITIES } from '../data/cities'
+import { useDropdown } from '../hooks/use-dropdown'
+import { Dropdown } from './Dropdown'
 
 export const CitiesDropdown = () => {
-  const [citiesOpen, setCitiesOpen] = useState(false);
-  const [cities, setCities] = useState<City[]>([]);
-  const [citySearch, setCitySearch] = useState("");
-  const [selectedCity, setSelectedCity] = useState<City | null>(null);
-  const [visibleCount, setVisibleCount] = useState(6);
-  const [citiesLoading, setCitiesLoading] = useState(false);
+  const [cities, setCities] = useState<City[]>([])
+  const [citySearch, setCitySearch] = useState('')
+  const [selectedCity, setSelectedCity] = useState<City | null>(null)
+  const [visibleCount, setVisibleCount] = useState(6)
+  const [citiesLoading, setCitiesLoading] = useState(false)
+  const { containerRef, isOpen: citiesOpen, closeDropdown, toggleDropdown } = useDropdown({
+    onOpen: handleOpenDropdown,
+  })
 
-  const normalize = (s: string) => s.toLowerCase().trim();
+  const normalize = (s: string) => s.toLowerCase().trim()
 
   const filteredCities = cities.filter((city) => {
-    const q = normalize(citySearch);
-    if (!q) return true;
+    const q = normalize(citySearch)
+    if (!q) return true
 
-    const inName = normalize(city.name).startsWith(q);
-    const inAliases = city.aliases?.some((alias) => normalize(alias).startsWith(q));
+    const inName = normalize(city.name).startsWith(q)
+    const inAliases = city.aliases?.some((alias) => normalize(alias).startsWith(q))
 
-    return inName || inAliases;
-  });
+    return inName || inAliases
+  })
 
-  const visibleCities = filteredCities.slice(0, visibleCount);
+  const visibleCities = filteredCities.slice(0, visibleCount)
 
-  const handleCitiesScroll = (e: React.UIEvent<HTMLUListElement>) => {
-    const target = e.currentTarget;
-    const { scrollTop, scrollHeight, clientHeight } = target;
+  const handleCitiesScroll = (event: UIEvent<HTMLUListElement>) => {
+    const target = event.currentTarget
+    const { scrollTop, scrollHeight, clientHeight } = target
 
-    const isBottom = scrollTop + clientHeight >= scrollHeight - 5;
+    const isBottom = scrollTop + clientHeight >= scrollHeight - 5
 
     if (isBottom) {
       setVisibleCount((prev) => {
-        const next = prev + 6;
-        return Math.min(next, filteredCities.length);
-      });
+        const next = prev + 6
+        return Math.min(next, filteredCities.length)
+      })
     }
-  };
+  }
 
   const handleCityClick = (city: City) => {
-    setSelectedCity(city);
-    setCitiesOpen(false);
-    // поп-ап
-  };
+    setSelectedCity(city)
+    closeDropdown()
+  }
 
-  const openCitiesDropdown = () => {
-    setCitySearch("");
-    setVisibleCount(6);
+  function handleOpenDropdown() {
+    setCitySearch('')
+    setVisibleCount(6)
 
-    setCitiesLoading(true);
-    setCitiesOpen(true);
+    setCitiesLoading(true)
 
     setTimeout(() => {
-      setCities(ALL_CITIES);
-      setCitiesLoading(false);
-    }, 500);
-  };
-
-  const toggleCitiesDropdown = () => {
-    setCitiesOpen((prev) => {
-      const next = !prev;
-      if (next) {
-        openCitiesDropdown();
-      }
-      return next;
-    });
-  };
-
-  const closeCitiesDropdown = () => {
-    setCitiesOpen(false);
-  };
+      setCities(ALL_CITIES)
+      setCitiesLoading(false)
+    }, 500)
+  }
 
   return (
     <Dropdown
+      containerRef={containerRef}
       isOpen={citiesOpen}
-      onClose={closeCitiesDropdown}
       className="cities-dropdown"
-    >
-      {citiesOpen ? (
-        <div className="dropdown-menu dropdown-menu--cities">
-          <input
-            type="text"
-            value={citySearch}
-            onChange={(e) => setCitySearch(e.target.value)}
-            placeholder="Start typing"
-            className="cities-search"
-          />
-
-          <ul onScroll={handleCitiesScroll}>
-            {citiesLoading && (
-              <li>
-                <button type="button" disabled>
-                  Loading...
-                </button>
-              </li>
-            )}
-
-            {!citiesLoading &&
-              visibleCities.map((city) => (
-                <li key={city.name}>
-                  <button type="button" onClick={() => handleCityClick(city)}>
-                    {city.name}
-                  </button>
-                </li>
-              ))}
-          </ul>
-        </div>
-      ) : (
+      menuClassName="dropdown-menu dropdown-menu--cities"
+      trigger={!citiesOpen ? (
         <button
           type="button"
           className="dropdown-toggle"
-          onClick={toggleCitiesDropdown}
+          onClick={toggleDropdown}
+          aria-expanded={citiesOpen}
+          aria-haspopup="listbox"
         >
           <span>
-            {selectedCity ? selectedCity.name : "Find a class in your city"}
+            {selectedCity ? selectedCity.name : 'Find a class in your city'}
           </span>
 
           <svg
@@ -129,7 +89,34 @@ export const CitiesDropdown = () => {
             />
           </svg>
         </button>
-      )}
+      ) : null}
+    >
+      <input
+        type="text"
+        value={citySearch}
+        onChange={(e) => setCitySearch(e.target.value)}
+        placeholder="Start typing"
+        className="cities-search"
+      />
+
+      <ul onScroll={handleCitiesScroll}>
+        {citiesLoading && (
+          <li>
+            <button type="button" disabled>
+              Loading...
+            </button>
+          </li>
+        )}
+
+        {!citiesLoading &&
+          visibleCities.map((city) => (
+            <li key={city.name}>
+              <button type="button" onClick={() => handleCityClick(city)}>
+                {city.name}
+              </button>
+            </li>
+          ))}
+      </ul>
     </Dropdown>
-  );
-};
+  )
+}
