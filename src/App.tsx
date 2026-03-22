@@ -3,7 +3,8 @@ import './style.css';
 import { MenuDropdown } from './components/MenuDropdown';
 import { CitiesDropdown } from './components/CitiesDropdown';
 import { LanguageDropdown } from './components/LanguageDropdown';
-import { translations, type Locale } from "./translations";
+import { type Locale } from "./translations";
+import { useI18n } from "./i18n-context";
 
 const languageOptions = [
   { code: "en", label: "EN" },
@@ -12,9 +13,7 @@ const languageOptions = [
 ];
 
 export const App = () => {
-  const [lang, setLang] = useState<Locale>("en");
-
-  const t = translations[lang];
+  const { lang, setLang, t } = useI18n();
 
   const [galleryIndex, setGalleryIndex] = useState(0);
 
@@ -44,6 +43,7 @@ export const App = () => {
       <header className="header">
         <div className="header-inner">
           <MenuDropdown items={menuItems} />
+
           <LanguageDropdown
             options={languageOptions}
             value={lang}
@@ -58,15 +58,9 @@ export const App = () => {
           <div className="hero-container container">
             <div className="hero-content">
               <div className="hero-text">
-                <p className="hero-slogan">
-                  {t.hero.slogan}
-                </p>
-                <h1 className="hero-title">
-                  {t.hero.title}
-                </h1>
-                <button className="hero-button">
-                  {t.hero.button}
-                </button>
+                <p className="hero-slogan">{t.hero.slogan}</p>
+                <h1 className="hero-title">{t.hero.title}</h1>
+                <button className="hero-button">{t.hero.button}</button>
               </div>
             </div>
 
@@ -173,11 +167,8 @@ export const App = () => {
                   <p className="address">Lida, Fermerskaya street, 5</p>
 
                   <CitiesDropdown />
-
-
-
-                </div>   {/* schedule-content */}
-              </div>     {/* schedule-block */}
+                </div>
+              </div>
 
               <div className="rules-block" id="rules">
                 <div className="rules-content">
@@ -199,9 +190,9 @@ export const App = () => {
 
                 <div className="rules-line"></div>
               </div>
-            </div> {/* blocks-row */}
-          </div>   {/* info-inner container */}
-        </section> {/* info-blocks */}
+            </div>
+          </div>
+        </section>
 
         {/* TEAM */}
         <section id="team" className="team">
@@ -331,7 +322,6 @@ export const App = () => {
           </div>
         </section>
       </main>
-
       {/* FOOTER */}
       <footer className="footer">
         <div className="footer-container container">
