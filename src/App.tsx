@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
-import './style.css';
+import { useState, useEffect } from "react";
+import "./style.css";
 import { Link, useLocation } from "react-router";
-import { DropdownFrame } from './components/DropdownFrame'
-import { CitiesDropdown } from './components/CitiesDropdown';
+import { DropdownFrame } from "./components/DropdownFrame";
+import { CitiesDropdown } from "./components/CitiesDropdown";
 import { type Locale } from "./translations";
 import { useI18n } from "./i18n-context";
+import axios from "axios";
 
 type MenuItem = {
   to: string;
@@ -53,6 +54,42 @@ export const App = () => {
     }
   }, [location.hash]);
 
+  // fetch
+  // axios
+
+  // tanStack query
+  // rtk query
+
+  useEffect(() => {
+    // fetch
+    const fetchData = async () => {
+      const data = await fetch(
+        "https://jsonplaceholder.typicode.com/comments",
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+
+      const result = await data.json();
+
+      console.log(result);
+    };
+
+    fetchData();
+
+    // axios
+    const fetchDataWithAxios = async () => {
+      const data = await axios.get(
+        "https://jsonplaceholder.typicode.com/comments",
+      );
+
+      console.log(data);
+    };
+
+    fetchDataWithAxios();
+  }, []);
+
   return (
     <>
       <header className="header">
@@ -67,11 +104,7 @@ export const App = () => {
             renderMenu={({ close }) => (
               <div className="dropdown-menu">
                 {menuItems.map((item) => (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onClick={close}
-                  >
+                  <Link key={item.to} to={item.to} onClick={close}>
                     {item.label}
                   </Link>
                 ))}
@@ -88,8 +121,10 @@ export const App = () => {
                 type="button"
               >
                 {
-                  (languageOptions.find((l) => l.code === lang) ?? languageOptions[0])
-                    .label
+                  (
+                    languageOptions.find((l) => l.code === lang) ??
+                    languageOptions[0]
+                  ).label
                 }
               </button>
             )}
@@ -113,7 +148,6 @@ export const App = () => {
               </div>
             )}
           />
-
         </div>
       </header>
 
@@ -124,8 +158,11 @@ export const App = () => {
             <div className="hero-content">
               <div className="hero-text">
                 <p className="hero-slogan">{t.hero.slogan}</p>
-                <h1 className="text-[120px] mb-[95px] leading-[1.2] font-normal">{t.hero.title}</h1>
-                <button className="
+                <h1 className="text-[120px] mb-[95px] leading-[1.2] font-normal">
+                  {t.hero.title}
+                </h1>
+                <button
+                  className="
                 bg-[var(--secondary-color)]
                 text-[var(--primary-color)]
                 border-none
@@ -134,7 +171,10 @@ export const App = () => {
                 cursor-pointer
                 transition-transform duration-300
                 hover:-translate-y-[2px]
-                ">{t.hero.button}</button>
+                "
+                >
+                  {t.hero.button}
+                </button>
               </div>
             </div>
 
@@ -155,7 +195,8 @@ export const App = () => {
             </div>
             <div className="about-text">
               <h2 className="vertical-title vertical-title-center">
-                What is<br />
+                What is
+                <br />
                 goat yoga?
               </h2>
               <div className="about-description">
@@ -204,7 +245,7 @@ export const App = () => {
             {galleryImages.map((_, i) => (
               <span
                 key={i}
-                className={`dot ${i === galleryIndex ? 'active' : ''}`}
+                className={`dot ${i === galleryIndex ? "active" : ""}`}
                 onClick={() => setGalleryIndex(i)}
               />
             ))}
