@@ -1,9 +1,8 @@
 import { useState } from "react";
+import { DropdownFrame } from "./DropdownFrame";
 import { type City, ALL_CITIES } from "../data/cities";
-import { Dropdown } from "./Dropdown";
 
-export const CitiesDropdown = () => {
-  const [citiesOpen, setCitiesOpen] = useState(false);
+export function CitiesDropdown() {
   const [cities, setCities] = useState<City[]>([]);
   const [citySearch, setCitySearch] = useState("");
   const [selectedCity, setSelectedCity] = useState<City | null>(null);
@@ -38,18 +37,18 @@ export const CitiesDropdown = () => {
     }
   };
 
-  const handleCityClick = (city: City) => {
+  const handleCityClick = (city: City, close: () => void) => {
     setSelectedCity(city);
-    setCitiesOpen(false);
-    // поп-ап
+    close();
+    // тут будет поп-ап
   };
 
-  const openCitiesDropdown = () => {
+  const openCitiesDropdown = (open: () => void) => {
     setCitySearch("");
     setVisibleCount(6);
-
     setCitiesLoading(true);
-    setCitiesOpen(true);
+
+    open();
 
     setTimeout(() => {
       setCities(ALL_CITIES);
@@ -57,27 +56,40 @@ export const CitiesDropdown = () => {
     }, 500);
   };
 
-  const toggleCitiesDropdown = () => {
-    setCitiesOpen((prev) => {
-      const next = !prev;
-      if (next) {
-        openCitiesDropdown();
-      }
-      return next;
-    });
-  };
-
-  const closeCitiesDropdown = () => {
-    setCitiesOpen(false);
-  };
-
   return (
-    <Dropdown
-      isOpen={citiesOpen}
-      onClose={closeCitiesDropdown}
+    <DropdownFrame
       className="cities-dropdown"
-    >
-      {citiesOpen ? (
+      renderToggle={({ isOpen, open, toggle }) => (
+        <button
+          type="button"
+          className="dropdown-toggle"
+          onClick={() => {
+            if (!isOpen) {
+              openCitiesDropdown(open);
+            } else {
+              toggle();
+            }
+          }}
+        >
+          <span>
+            {selectedCity ? selectedCity.name : "Find a class in your city"}
+          </span>
+
+          <svg
+            width="10"
+            height="17"
+            viewBox="0 0 10 17"
+            fill="none"
+            className="cities-icon"
+          >
+            <path
+              d="M1.47917 16.6667L0 15.1875L6.85417 8.33333L0 1.47917L1.47917 0L9.8125 8.33333L1.47917 16.6667Z"
+              fill="#14092A"
+            />
+          </svg>
+        </button>
+      )}
+      renderMenu={({ close }) => (
         <div className="dropdown-menu dropdown-menu--cities">
           <input
             type="text"
@@ -99,37 +111,17 @@ export const CitiesDropdown = () => {
             {!citiesLoading &&
               visibleCities.map((city) => (
                 <li key={city.name}>
-                  <button type="button" onClick={() => handleCityClick(city)}>
+                  <button
+                    type="button"
+                    onClick={() => handleCityClick(city, close)}
+                  >
                     {city.name}
                   </button>
                 </li>
               ))}
           </ul>
         </div>
-      ) : (
-        <button
-          type="button"
-          className="dropdown-toggle"
-          onClick={toggleCitiesDropdown}
-        >
-          <span>
-            {selectedCity ? selectedCity.name : "Find a class in your city"}
-          </span>
-
-          <svg
-            width="10"
-            height="17"
-            viewBox="0 0 10 17"
-            fill="none"
-            className="cities-icon"
-          >
-            <path
-              d="M1.47917 16.6667L0 15.1875L6.85417 8.33333L0 1.47917L1.47917 0L9.8125 8.33333L1.47917 16.6667Z"
-              fill="#14092A"
-            />
-          </svg>
-        </button>
       )}
-    </Dropdown>
+    />
   );
-};
+}

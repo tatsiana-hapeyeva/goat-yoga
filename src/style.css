@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 * {
   margin: 0;
   padding: 0;
@@ -56,7 +58,7 @@ a:hover {
   background: var(--primary-color);
 }
 
-.header-inner {
+.header__inner {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem 20px;
@@ -65,11 +67,11 @@ a:hover {
   justify-content: space-between;
 }
 
-.hero {
+/* .hero {
   width: 100%;
   min-height: 100vh;
   padding-top: 80px;
-}
+} */
 
 .hero-container {
   max-width: 1200px;
@@ -97,14 +99,14 @@ a:hover {
   text-transform: uppercase;
 }
 
-.hero-title {
+/* .hero-title {
   font-size: 120px;
   margin-bottom: 95px;
   line-height: 1;
   font-weight: 400;
-}
+} */
 
-.hero-button {
+/* .hero-button {
   background: var(--secondary-color);
   color: var(--primary-color);
   border: none;
@@ -134,7 +136,7 @@ a:hover {
   height: 100%;
   object-fit: cover;
   object-position: right center;
-}
+}*/
 
 .about {
   padding: 100px 0;
@@ -701,6 +703,8 @@ a:hover {
     right: -40px;
     top: -40px;
   }
+
+  /*
 }
 
 @media (max-width: 1024px) {
@@ -926,7 +930,7 @@ a:hover {
   transition: color 0.3s;
 }
 
-.nav-toggle:hover {
+.nav__toggle:hover {
   color: var(--secondary-color);
 }
 
@@ -940,12 +944,6 @@ a:hover {
   display: flex;
   flex-direction: column;
   z-index: 100;
-}
-
-.dropdown-menu ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
 }
 
 .dropdown-menu li {
@@ -1035,7 +1033,7 @@ a:hover {
   border-color: var(--secondary-color);
 }
 
-.dropdown-lang .dropdown-toggle {
+.lang-dropdown__toggle {
   width: auto;
   white-space: nowrap;
   padding-inline: 12px 20px;

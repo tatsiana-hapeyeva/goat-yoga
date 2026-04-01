@@ -1,26 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './style.css';
-import { MenuDropdown } from './components/MenuDropdown';
+import { Link, useLocation } from "react-router";
+import { DropdownFrame } from './components/DropdownFrame'
 import { CitiesDropdown } from './components/CitiesDropdown';
-import { LanguageDropdown } from './components/LanguageDropdown';
 import { type Locale } from "./translations";
 import { useI18n } from "./i18n-context";
 
-const languageOptions = [
-  { code: "en", label: "EN" },
-  { code: "ru", label: "RU" },
-  { code: "by", label: "BY" },
-];
+type MenuItem = {
+  to: string;
+  label: string;
+};
 
 export const App = () => {
   const { lang, setLang, t } = useI18n();
+  const location = useLocation();
 
   const [galleryIndex, setGalleryIndex] = useState(0);
 
   const galleryImages = [
-    '/images/goat-yoga-1.png',
-    '/images/goat-yoga-2.png',
-    '/images/goat-yoga-3.png',
+    "/images/goat-yoga-1.png",
+    "/images/goat-yoga-2.png",
+    "/images/goat-yoga-3.png",
   ];
 
   const safeIndex = (i: number) => {
@@ -31,40 +31,114 @@ export const App = () => {
   const goPrev = () => setGalleryIndex((i) => safeIndex(i - 1));
   const goNext = () => setGalleryIndex((i) => safeIndex(i + 1));
 
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     { to: "#about", label: "About" },
     { to: "#location", label: "Location" },
     { to: "#team", label: "Our team" },
     { to: "#pricing", label: "Membership" },
   ];
 
+  const languageOptions = [
+    { code: "en", label: "EN" },
+    { code: "ru", label: "RU" },
+  ];
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.slice(1);
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [location.hash]);
+
   return (
     <>
       <header className="header">
-        <div className="header-inner">
-          <MenuDropdown items={menuItems} />
-
-          <LanguageDropdown
-            options={languageOptions}
-            value={lang}
-            onChange={(code) => setLang(code as Locale)}
+        <div className="header__inner">
+          <DropdownFrame
+            className="nav-dropdown"
+            renderToggle={({ isOpen, toggle }) => (
+              <button className="nav-toggle" onClick={toggle} type="button">
+                {isOpen ? "✕" : "☰"}
+              </button>
+            )}
+            renderMenu={({ close }) => (
+              <div className="dropdown-menu">
+                {menuItems.map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={close}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
           />
+
+          <DropdownFrame
+            className="lang-dropdown"
+            renderToggle={({ toggle }) => (
+              <button
+                className="dropdown-toggle lang-dropdown__toggle"
+                onClick={toggle}
+                type="button"
+              >
+                {
+                  (languageOptions.find((l) => l.code === lang) ?? languageOptions[0])
+                    .label
+                }
+              </button>
+            )}
+            renderMenu={({ close }) => (
+              <div className="dropdown-menu dropdown-menu--lang">
+                <ul className="lang-dropdown__list">
+                  {languageOptions.map((option) => (
+                    <li key={option.code}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLang(option.code as Locale);
+                          close();
+                        }}
+                      >
+                        {option.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          />
+
         </div>
       </header>
 
       <main>
         {/* HERO */}
-        <section id="main" className="hero">
-          <div className="hero-container container">
+        <section id="main" className="w-full min-h-screen pt-[80px]">
+          <div className="hero-container">
             <div className="hero-content">
               <div className="hero-text">
                 <p className="hero-slogan">{t.hero.slogan}</p>
-                <h1 className="hero-title">{t.hero.title}</h1>
-                <button className="hero-button">{t.hero.button}</button>
+                <h1 className="text-[120px] mb-[95px] leading-[1.2] font-normal">{t.hero.title}</h1>
+                <button className="
+                bg-[var(--secondary-color)]
+                text-[var(--primary-color)]
+                border-none
+                w-[324px] h-[81px]
+                text-[16px] font-normal uppercase
+                cursor-pointer
+                transition-transform duration-300
+                hover:-translate-y-[2px]
+                ">{t.hero.button}</button>
               </div>
             </div>
 
-            <div className="hero-image">
+            <div className="flex-[0_0_50%] relative overflow-hidden">
               <img src="/images/decorative-pattern.png" alt="Hero" />
             </div>
           </div>
