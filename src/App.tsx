@@ -5,16 +5,43 @@ import { DropdownFrame } from "./components/DropdownFrame";
 import { CitiesDropdown } from "./components/CitiesDropdown";
 import { type Locale } from "./translations";
 import { useI18n } from "./i18n-context";
+import ClassRegistration from "./components/ClassRegistration";
 import axios from "axios";
+import { useInfoPopup } from "./components/useInfoPopup";
+import InfoPopup from "./components/InfoPopupUI";
 
 type MenuItem = {
   to: string;
   label: string;
 };
 
+type Rules = {
+  id: number;
+  name: string;
+  email: string;
+  body: string;
+};
+
 export const App = () => {
   const { lang, setLang, t } = useI18n();
   const location = useLocation();
+
+  const {
+    isOpen,
+    isLoading,
+    items,
+    error,
+    open,
+    close,
+  } = useInfoPopup<Rules>({
+    loadItems: async () => {
+      const response = await axios.get<Rules[]>(
+        "https://jsonplaceholder.typicode.com/comments"
+      );
+
+      return response.data.slice(0, 20);
+    },
+  });
 
   const [galleryIndex, setGalleryIndex] = useState(0);
 
@@ -53,42 +80,6 @@ export const App = () => {
       }
     }
   }, [location.hash]);
-
-  // fetch
-  // axios
-
-  // tanStack query
-  // rtk query
-
-  useEffect(() => {
-    // fetch
-    const fetchData = async () => {
-      const data = await fetch(
-        "https://jsonplaceholder.typicode.com/comments",
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-
-      const result = await data.json();
-
-      console.log(result);
-    };
-
-    fetchData();
-
-    // axios
-    const fetchDataWithAxios = async () => {
-      const data = await axios.get(
-        "https://jsonplaceholder.typicode.com/comments",
-      );
-
-      console.log(data);
-    };
-
-    fetchDataWithAxios();
-  }, []);
 
   return (
     <>
@@ -161,20 +152,19 @@ export const App = () => {
                 <h1 className="text-[120px] mb-[95px] leading-[1.2] font-normal">
                   {t.hero.title}
                 </h1>
-                <button
-                  className="
-                bg-[var(--secondary-color)]
-                text-[var(--primary-color)]
-                border-none
-                w-[324px] h-[81px]
-                text-[16px] font-normal uppercase
-                cursor-pointer
-                transition-transform duration-300
-                hover:-translate-y-[2px]
-                "
-                >
-                  {t.hero.button}
-                </button>
+                <ClassRegistration
+                  buttonText={t.hero.button}
+                  buttonClassName="
+    bg-[var(--secondary-color)]
+    text-[var(--primary-color)]
+    border-none
+    w-[324px] h-[81px]
+    text-[16px] font-normal uppercase
+    cursor-pointer
+    transition-transform duration-300
+    hover:-translate-y-[2px]
+  "
+                />
               </div>
             </div>
 
@@ -292,7 +282,14 @@ export const App = () => {
                     We have few rules, but they are very important. You can
                     check them out at the link below.
                   </p>
-                  <a href="#rules" className="rules-link">
+                  <a
+                    href="#rules"
+                    className="rules-link"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      open();
+                    }}
+                  >
                     Check
                     <svg width="10" height="17" viewBox="0 0 10 17" fill="none">
                       <path
@@ -304,6 +301,23 @@ export const App = () => {
                 </div>
 
                 <div className="rules-line"></div>
+
+                <InfoPopup isOpen={isOpen} title="Rules" onClose={close}>
+                  {isLoading && <p>Loading...</p>}
+                  {error && <p>{error}</p>}
+
+                  {!isLoading && !error && (
+                    <div className="rules-list">
+                      {items.map((item) => (
+                        <article key={item.id} className="rules-item">
+                          <p>{item.name}</p>
+                          <p>{item.email}</p>
+                          <p>{item.body}</p>
+                        </article>
+                      ))}
+                    </div>
+                  )}
+                </InfoPopup>
               </div>
             </div>
           </div>
