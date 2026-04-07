@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useInfoPopup } from "./useInfoPopup";
 import InfoPopup from "./InfoPopupUI";
-import axios from "axios";
 
 type YogaClass = {
     id: number;
@@ -25,19 +24,15 @@ function ClassRegistration({
     const {
         isOpen,
         isLoading,
-        items: classes,
+        data,
         error,
         open,
         close,
-    } = useInfoPopup<YogaClass>({
-        loadItems: async () => {
-            const { data } = await axios.get(
-                "https://jsonplaceholder.typicode.com/posts",
-            );
-
-            return data.slice(0, 10);
-        },
+    } = useInfoPopup({
+        url: "https://jsonplaceholder.typicode.com/posts",
     });
+
+    const classes = (data as YogaClass[] | null)?.slice(0, 10) ?? [];
 
     const handleOpen = async () => {
         setSelectedClassId(null);
@@ -51,16 +46,29 @@ function ClassRegistration({
         setSuccessMessage(null);
         setSubmitError(null);
 
-        const selectedClass = classes.find((item) => item.id === selectedClassId);
+        const selectedClass = classes.find(
+            (item) => item.id === selectedClassId
+        );
 
         if (!selectedClass) return;
 
         try {
-            await axios.post("https://jsonplaceholder.typicode.com/posts", {
-                classId: selectedClass.id,
-                title: selectedClass.title,
-                description: selectedClass.body,
-            });
+            const response = await fetch(
+                "https://jsonplaceholder.typicode.com/posts",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        classId: selectedClass.id,
+                        title: selectedClass.title,
+                        description: selectedClass.body,
+                    }),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Could not submit your selection.");
+            }
 
             setSuccessMessage("Your class was successfully booked.");
         } catch {

@@ -75,18 +75,12 @@ export function CitiesDropdown() {
             {selectedCity ? selectedCity.name : "Find a class in your city"}
           </span>
 
-          <svg
-            width="10"
-            height="17"
-            viewBox="0 0 10 17"
-            fill="none"
-            className="cities-icon"
-          >
-            <path
-              d="M1.47917 16.6667L0 15.1875L6.85417 8.33333L0 1.47917L1.47917 0L9.8125 8.33333L1.47917 16.6667Z"
-              fill="#14092A"
-            />
-          </svg>
+          <img
+            src="/images/material-symbols_arrow-forward-ios.png"
+            alt="arrow"
+            width={24}
+            height={24}
+          />
         </button>
       )}
       renderMenu={({ close }) => (

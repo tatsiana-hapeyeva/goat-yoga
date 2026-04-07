@@ -6,7 +6,6 @@ import { CitiesDropdown } from "./components/CitiesDropdown";
 import { type Locale } from "./translations";
 import { useI18n } from "./i18n-context";
 import ClassRegistration from "./components/ClassRegistration";
-import axios from "axios";
 import { useInfoPopup } from "./components/useInfoPopup";
 import InfoPopup from "./components/InfoPopupUI";
 
@@ -29,19 +28,15 @@ export const App = () => {
   const {
     isOpen,
     isLoading,
-    items,
+    data,
     error,
     open,
     close,
-  } = useInfoPopup<Rules>({
-    loadItems: async () => {
-      const response = await axios.get<Rules[]>(
-        "https://jsonplaceholder.typicode.com/comments"
-      );
-
-      return response.data.slice(0, 20);
-    },
+  } = useInfoPopup({
+    url: "https://jsonplaceholder.typicode.com/comments",
   });
+
+  const items = (data as Rules[] | null)?.slice(0, 20) ?? [];
 
   const [galleryIndex, setGalleryIndex] = useState(0);
 
@@ -191,17 +186,10 @@ export const App = () => {
               </h2>
               <div className="about-description">
                 <p>
-                  It&apos;s just like regular yoga with breathing and stretches
-                  besides that adorable and friendly goats are roaming around,
-                  jumping on you, trying to kiss your face, and maybe nibbling
-                  on your yoga pants. It&apos;s healthy, therapeutic and fun.
+                  It's almost like regular yoga, but with friendly goats wandering around, jumping on you, trying to kiss your face, and maybe nibbling on your yoga pants. It's healthy, therapeutic, and fun.
                 </p>
                 <p>
-                  Each class maxes at 20 people and will have at least 10 goats.
-                  You don&apos;t need to be in excellent physical shape to start
-                  the practice. This class is designed for beginners but all
-                  levels are welcome to attend. Please note that classes are for
-                  guests aged 16 years and older.
+                  Each class maxes at 20 people and has at least 10 goats. You don't need to be in excellent physical shape to join. The class is designed for beginners, but all levels are welcome. Please note that classes are for guests aged 16 and older.
                 </p>
               </div>
             </div>
@@ -291,12 +279,12 @@ export const App = () => {
                     }}
                   >
                     Check
-                    <svg width="10" height="17" viewBox="0 0 10 17" fill="none">
-                      <path
-                        d="M1.47917 16.6667L0 15.1875L6.85417 8.33333L0 1.47917L1.47917 0L9.8125 8.33333L1.47917 16.6667Z"
-                        fill="#14092A"
-                      />
-                    </svg>
+                    <img
+                      src="/images/material-symbols_arrow-forward-ios.png"
+                      alt="arrow"
+                      width={24}
+                      height={24}
+                    />
                   </a>
                 </div>
 
@@ -409,18 +397,12 @@ export const App = () => {
                   <p>8 visits within a month. 16,87 BYN per visit.</p>
                   <a href="#" className="card-button">
                     Sign up for a class
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2L18.025 12L8.025 22Z"
-                        fill="#14092A"
-                      />
-                    </svg>
+                    <img
+                      src="/images/material-symbols_arrow-forward-ios.png"
+                      alt="arrow"
+                      width={24}
+                      height={24}
+                    />
                   </a>
                 </div>
               </div>
