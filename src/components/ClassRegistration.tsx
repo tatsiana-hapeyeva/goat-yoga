@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { useInfoPopup } from "./useInfoPopup";
 import InfoPopup from "./InfoPopupUI";
-import axios from "axios";
-
-type YogaClass = {
-    id: number;
-    title: string;
-    body: string;
-};
+import { useGetClassesQuery, useBookClassMutation } from "../services/api";
 
 type ClassRegistrationProps = {
     buttonText: string;
@@ -22,45 +16,36 @@ function ClassRegistration({
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [submitError, setSubmitError] = useState<string | null>(null);
 
-    const {
-        isOpen,
-        isLoading,
-        items: classes,
-        error,
-        open,
-        close,
-    } = useInfoPopup<YogaClass>({
-        loadItems: async () => {
-            const { data } = await axios.get(
-                "https://jsonplaceholder.typicode.com/posts",
-            );
+    const { isOpen, open, close } = useInfoPopup();
 
-            return data.slice(0, 10);
-        },
+    const { data, error, isLoading } = useGetClassesQuery(undefined, {
+        skip: !isOpen,
     });
 
-    const handleOpen = async () => {
+    const [bookClass, { isLoading: isSubmitting }] = useBookClassMutation();
+
+    const classes = data?.slice(0, 10) ?? [];
+    const selectedClass = classes.find((item) => item.id === selectedClassId);
+
+    const handleOpen = () => {
         setSelectedClassId(null);
         setSuccessMessage(null);
         setSubmitError(null);
-
-        await open();
+        open();
     };
 
     const handleSubmit = async () => {
+        if (!selectedClass) return;
+
         setSuccessMessage(null);
         setSubmitError(null);
 
-        const selectedClass = classes.find((item) => item.id === selectedClassId);
-
-        if (!selectedClass) return;
-
         try {
-            await axios.post("https://jsonplaceholder.typicode.com/posts", {
+            await bookClass({
                 classId: selectedClass.id,
                 title: selectedClass.title,
                 description: selectedClass.body,
-            });
+            }).unwrap();
 
             setSuccessMessage("Your class was successfully booked.");
         } catch {
@@ -84,7 +69,7 @@ function ClassRegistration({
                 onClose={close}
             >
                 {isLoading && <p>Loading classes...</p>}
-                {error && <p>{error}</p>}
+                {error && <p>Could not load classes.</p>}
                 {submitError && <p>{submitError}</p>}
                 {successMessage && <p>{successMessage}</p>}
 
@@ -108,8 +93,11 @@ function ClassRegistration({
                                             e.stopPropagation();
                                             handleSubmit();
                                         }}
+                                        disabled={isSubmitting}
                                     >
-                                        Sign up for a class
+                                        {isSubmitting
+                                            ? "Just a sec..."
+                                            : "Sign up for a class"}
                                     </button>
                                 )}
                             </div>

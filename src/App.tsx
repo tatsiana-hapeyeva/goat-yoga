@@ -6,42 +6,27 @@ import { CitiesDropdown } from "./components/CitiesDropdown";
 import { type Locale } from "./translations";
 import { useI18n } from "./i18n-context";
 import ClassRegistration from "./components/ClassRegistration";
-import axios from "axios";
 import { useInfoPopup } from "./components/useInfoPopup";
 import InfoPopup from "./components/InfoPopupUI";
+import { useGetRulesQuery, type Rule } from "./services/api";
 
 type MenuItem = {
   to: string;
   label: string;
 };
 
-type Rules = {
-  id: number;
-  name: string;
-  email: string;
-  body: string;
-};
-
 export const App = () => {
   const { lang, setLang, t } = useI18n();
   const location = useLocation();
 
-  const {
-    isOpen,
-    isLoading,
-    items,
-    error,
-    open,
-    close,
-  } = useInfoPopup<Rules>({
-    loadItems: async () => {
-      const response = await axios.get<Rules[]>(
-        "https://jsonplaceholder.typicode.com/comments"
-      );
 
-      return response.data.slice(0, 20);
-    },
+  const { isOpen, open, close } = useInfoPopup();
+
+  const { data, error, isLoading } = useGetRulesQuery(undefined, {
+    skip: !isOpen,
   });
+
+  const items: Rule[] = data?.slice(0, 20) ?? [];
 
   const [galleryIndex, setGalleryIndex] = useState(0);
 
@@ -291,12 +276,12 @@ export const App = () => {
                     }}
                   >
                     Check
-                    <svg width="10" height="17" viewBox="0 0 10 17" fill="none">
-                      <path
-                        d="M1.47917 16.6667L0 15.1875L6.85417 8.33333L0 1.47917L1.47917 0L9.8125 8.33333L1.47917 16.6667Z"
-                        fill="#14092A"
-                      />
-                    </svg>
+                    <img
+                      src="/images/material-symbols_arrow-forward-ios.png"
+                      alt="arrow"
+                      width={20}
+                      height={20}
+                    />
                   </a>
                 </div>
 
@@ -304,7 +289,7 @@ export const App = () => {
 
                 <InfoPopup isOpen={isOpen} title="Rules" onClose={close}>
                   {isLoading && <p>Loading...</p>}
-                  {error && <p>{error}</p>}
+                  {error && <p>Could not load rules.</p>}
 
                   {!isLoading && !error && (
                     <div className="rules-list">
@@ -409,18 +394,12 @@ export const App = () => {
                   <p>8 visits within a month. 16,87 BYN per visit.</p>
                   <a href="#" className="card-button">
                     Sign up for a class
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M8.025 22L6.25 20.225L14.475 12L6.25 3.775L8.025 2L18.025 12L8.025 22Z"
-                        fill="#14092A"
-                      />
-                    </svg>
+                    <img
+                      src="/images/material-symbols_arrow-forward-ios.png"
+                      alt="arrow"
+                      width={20}
+                      height={20}
+                    />
                   </a>
                 </div>
               </div>

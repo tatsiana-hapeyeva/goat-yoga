@@ -1,28 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-type UseInfoPopupOptions<T> = {
-    loadItems: () => Promise<T[]>;
-};
+function useLockBodyScroll(locked: boolean) {
+    useEffect(() => {
+        if (!locked) return;
 
-export function useInfoPopup<T>({ loadItems }: UseInfoPopupOptions<T>) {
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            document.body.style.overflow = prevOverflow;
+        };
+    }, [locked]);
+}
+
+export function useInfoPopup() {
     const [isOpen, setIsOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [items, setItems] = useState<T[]>([]);
-    const [error, setError] = useState<string | null>(null);
 
-    const open = async () => {
+    useLockBodyScroll(isOpen);
+
+    const open = () => {
         setIsOpen(true);
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            const result = await loadItems();
-            setItems(result);
-        } catch {
-            setError("Could not load data.");
-        } finally {
-            setIsLoading(false);
-        }
     };
 
     const close = () => {
@@ -31,9 +28,6 @@ export function useInfoPopup<T>({ loadItems }: UseInfoPopupOptions<T>) {
 
     return {
         isOpen,
-        isLoading,
-        items,
-        error,
         open,
         close,
     };
