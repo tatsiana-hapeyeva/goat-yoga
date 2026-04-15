@@ -211,66 +211,46 @@ a:hover {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
-  display: flex;
-  justify-content: center;
-  overflow: hidden;
   position: relative;
+  overflow: visible;
 }
 
-/* временно, чтобы видеть движение */
-.gallery-track {
-  display: flex;
-  gap: 30px;
-  transition: transform 0.4s ease;
-  border: 2px solid red;
+.gallery-swiper {
+  width: 100%;
 }
 
-.gallery-slide {
-  flex: 0 0 651px;
-  height: 435px;
+.gallery-swiper .swiper-slide {
+  height: auto !important;
 }
 
-.gallery-slide img {
+.gallery-swiper__slide {
+  height: auto !important;
+}
+
+.gallery-swiper__media {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.gallery-swiper__image {
   width: 100%;
   height: 100%;
+  display: block;
   object-fit: cover;
+  object-position: center;
 }
 
-.gallery-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
+@media (min-width: 768px) {
+  .gallery-swiper__media {
+    height: 360px;
+  }
 }
 
-.gallery-prev {
-  left: 20px;
-}
-
-.gallery-next {
-  right: 20px;
-}
-
-.gallery-indicators {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.gallery-indicators .dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #D6D1E0;
-}
-
-.gallery-indicators .dot.active {
-  background: #BF278C;
+@media (min-width: 1024px) {
+  .gallery-swiper__media {
+    height: 432px;
+  }
 }
 
 .decorative-element {
@@ -832,9 +812,10 @@ a:hover {
   }
 */
 
-  .gallery-slide {
+  /*.gallery-slide {
     flex: 0 0 90vw;
   }
+  */
 
   .pricing {
     padding: 40px 0;
@@ -1095,3 +1076,4 @@ ol {
 .class-card--selected {
   border: 2px solid #000;
 }
+

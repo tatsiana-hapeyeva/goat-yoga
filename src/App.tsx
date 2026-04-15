@@ -1,14 +1,17 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import "./style.css";
 import { Link, useLocation } from "react-router";
-import { DropdownFrame } from "./components/DropdownFrame";
-import { CitiesDropdown } from "./components/CitiesDropdown";
+import { DropdownFrame } from "./components/dropdown/DropdownFrame";
+import { CitiesDropdown } from "./components/dropdown/CitiesDropdown";
 import { type Locale } from "./translations";
 import { useI18n } from "./i18n-context";
-import ClassRegistration from "./components/ClassRegistration";
-import { useInfoPopup } from "./components/useInfoPopup";
-import InfoPopup from "./components/InfoPopupUI";
+import ClassRegistration from "./components/popup/ClassRegistration";
+import InfoPopup from "./components/popup/InfoPopupUI";
 import { useGetRulesQuery, type Rule } from "./services/api";
+import { useDispatch, useSelector } from 'react-redux';
+import { openPopup, closePopup } from './components/popup/popupSlice';
+import type { RootState } from './app/store';
+import GallerySlider from './components/gallery/GallerySlider'
 
 type MenuItem = {
   to: string;
@@ -20,29 +23,21 @@ export const App = () => {
   const location = useLocation();
 
 
-  const { isOpen, open, close } = useInfoPopup();
+const dispatch = useDispatch();
+
+const isOpen = useSelector(
+  (state: RootState) =>
+    state.popup.isOpen && state.popup.popupType === 'rules'
+);
+
+const open = () => dispatch(openPopup('rules'));
+const close = () => dispatch(closePopup());
 
   const { data, error, isLoading } = useGetRulesQuery(undefined, {
-    skip: !isOpen,
-  });
+  skip: !isOpen,
+});
 
   const items: Rule[] = data?.slice(0, 20) ?? [];
-
-  const [galleryIndex, setGalleryIndex] = useState(0);
-
-  const galleryImages = [
-    "/images/goat-yoga-1.png",
-    "/images/goat-yoga-2.png",
-    "/images/goat-yoga-3.png",
-  ];
-
-  const safeIndex = (i: number) => {
-    const len = galleryImages.length;
-    return (i + len) % len;
-  };
-
-  const goPrev = () => setGalleryIndex((i) => safeIndex(i - 1));
-  const goNext = () => setGalleryIndex((i) => safeIndex(i + 1));
 
   const menuItems: MenuItem[] = [
     { to: "#about", label: "About" },
@@ -195,36 +190,7 @@ export const App = () => {
 
         {/* GALLERY */}
         <section className="gallery">
-          <div className="gallery-container container">
-            <button className="gallery-arrow gallery-prev" onClick={goPrev}>
-              ‹
-            </button>
-
-            <div
-              className="gallery-track"
-              style={{ transform: `translateX(-${galleryIndex * 681}px)` }}
-            >
-              {galleryImages.map((src, i) => (
-                <div className="gallery-slide" key={i}>
-                  <img src={src} alt={`goat ${i + 1}`} />
-                </div>
-              ))}
-            </div>
-
-            <button className="gallery-arrow gallery-next" onClick={goNext}>
-              ›
-            </button>
-          </div>
-
-          <div className="gallery-indicators">
-            {galleryImages.map((_, i) => (
-              <span
-                key={i}
-                className={`dot ${i === galleryIndex ? "active" : ""}`}
-                onClick={() => setGalleryIndex(i)}
-              />
-            ))}
-          </div>
+          <GallerySlider />
 
           <div className="decorative-element">
             <img src="/images/gallery-pattern.png" alt="decorative pattern" />

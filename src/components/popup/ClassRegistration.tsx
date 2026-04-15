@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { useInfoPopup } from "./useInfoPopup";
+import { useDispatch, useSelector } from "react-redux";
 import InfoPopup from "./InfoPopupUI";
-import { useGetClassesQuery, useBookClassMutation } from "../services/api";
+import { useGetClassesQuery, useBookClassMutation } from "../../services/api";
+import { openPopup, closePopup } from './popupSlice';
+import type { RootState } from '../../app/store';
 
 type ClassRegistrationProps = {
     buttonText: string;
@@ -16,7 +18,15 @@ function ClassRegistration({
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [submitError, setSubmitError] = useState<string | null>(null);
 
-    const { isOpen, open, close } = useInfoPopup();
+const dispatch = useDispatch();
+
+const isOpen = useSelector(
+  (state: RootState) =>
+    state.popup.isOpen && state.popup.popupType === 'training'
+);
+
+const open = () => dispatch(openPopup('training'));
+const close = () => dispatch(closePopup());
 
     const { data, error, isLoading } = useGetClassesQuery(undefined, {
         skip: !isOpen,

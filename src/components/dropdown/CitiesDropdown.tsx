@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { DropdownFrame } from "./DropdownFrame";
-import { type City, ALL_CITIES } from "../data/cities";
+import { type City, ALL_CITIES } from "../../data/cities";
 
 export function CitiesDropdown() {
   const [cities, setCities] = useState<City[]>([]);
