@@ -1,0 +1,32 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 300ms ease;
+  margin-top: auto;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+}
+
+.button--large {
+  width: 100%;
+  max-width: 324px;
+  min-height: 81px;
+  padding: 20px 24px;
+}
+
+.button--small {
+  width: auto;
+  min-height: 48px;
+  padding: 12px 18px;
+}

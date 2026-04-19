@@ -1,0 +1,26 @@
+.pattern-card {
+  border: 1px solid #4db26f;
+  border-radius: 0 0 180px 0;
+  width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  height: 100%;
+}
+
+.pattern-card__decor {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.pattern-card__content {
+  padding: 30px 30px 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}

@@ -1,11 +1,27 @@
 import { createBrowserRouter } from "react-router";
-import App from './src/App'
+import MainLayout from "./src/layouts/MainLayout";
+import HomePage from "./src/pages/HomePage";
+import ToBeginPage from "./src/pages/ToBeginPage";
+import PrivateEventsPage from "./src/pages/PrivateEventsPage";
 
 const router = createBrowserRouter([
-    {
+  {
+    element: <MainLayout />,
+    children: [
+      {
         path: "/",
-        element: <App />
-    },
+        element: <HomePage />,
+      },
+      {
+        path: "/tobegin",
+        element: <ToBeginPage />,
+      },
+      {
+        path: "/private-events",
+        element: <PrivateEventsPage />,
+      },
+    ],
+  },
 ]);
 
-export default router
+export default router;
